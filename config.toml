@@ -1,6 +1,9 @@
 languageCode = "en-us"
 title = "Database Systems"
 
+[taxonomies]
+category = "categories"
+
 [params]
 useSQL = true
 TrackingID = "UA-52618243-3"

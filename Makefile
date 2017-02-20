@@ -1,6 +1,7 @@
 render:
 	hugo -t course
-all:
+
+serve:
 	hugo server -t course -w
 
 deploy:

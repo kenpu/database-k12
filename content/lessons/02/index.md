@@ -1,5 +1,6 @@
 +++
 title = "Relational Databases"
+categories = "database"
 +++
 
 # Relational Databases

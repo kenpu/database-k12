@@ -1,5 +1,6 @@
 +++
 title = "Tables everywhere"
+categories = ["database"]
 +++
 
 # Tables everywhere
@@ -42,13 +43,13 @@ for inclusion in the Astronomiae instauratae progymnasmata.
 
 <img src="ebola-2015.jpg"></img>
 
-[!](note) Tracking cases at the Liberian Ministry of Health and Social Welfare.
+[!](note fragment) Tracking cases at the Liberian Ministry of Health and Social Welfare.
 [Original source](http://motherboard.vice.com/read/ebolas-paper-trail)
 
 What's in common?
 ========================================================
 
-<center style="margin-top: 150px">
+<center style="margin-top: 150px; font-size: 200%">
 Tabular layout
 </center>
 
@@ -74,10 +75,11 @@ Brooklin | Ontario | NULL |
 
 *Some definitions:*
 
-> - Table (relation)
-> - Attributes (columns)
-> - Tuples (rows)
-> - Values (cell)
+- [!](fragments)
+- Table (relation)
+- Attributes (columns)
+- Tuples (rows)
+- Values (cell)
 
 
 Table
@@ -157,16 +159,71 @@ A tuple is a row of data in a table.
 
 [!](split)
 
-Here are two tuples:
+Two tuples
 
-- The first tuple has three attributes, and their respective data values.
+# _____________________________________
 
-- The second tuple also has the same three attributes, but different data
-  values.  Also the second tuple has a _missing_ value.
+[!](columns 6:)
+
+<table>
+    <thead>
+    <tr>
+        <th>City</th>
+        <th>Province</th>
+        <th>Population</th>
+    </tr>
+    </thead>
+    <tr style=background:#a6a>
+        <td>Paris</td>
+        <td>Ontario</td>
+        <td>11,000</td>
+    </tr>
+    <tr style="background: #afa; opacity: 0.1">
+        <td>Brooklin</td>
+        <td>Ontario</td>
+        <td>NULL</td>
+    </tr>
+</table>
+
+[!](split)
+
+This tuple has three values.
+
+[!](note 6) Can it have four values?
+
+
+# _____________________________________
+
+[!](columns 6:)
+
+<table>
+    <thead>
+    <tr>
+        <th>City</th>
+        <th>Province</th>
+        <th>Population</th>
+    </tr>
+    </thead>
+    <tr style=background:#a6a;opacity:0.2>
+        <td>Paris</td>
+        <td>Ontario</td>
+        <td>11,000</td>
+    </tr>
+    <tr style="background: #afa">
+        <td>Brooklin</td>
+        <td>Ontario</td>
+        <td>NULL</td>
+    </tr>
+</table>
+
+[!](split)
+
+This tuple has two values, as the value for the attribute **population** is
+*missing*.
 
 
 
-Data Representation
+Data Modeling
 ========================================
 
 [!](highlight)
@@ -176,21 +233,19 @@ Data Representation
 Data Modeling
 ========================================
 
-- Data in a specific domain
+- Data in real-life scenarios:
 
-    > For example:
-    >
+    For example:
+
     > 1. Student records
     > 2. Google map
     > 3. Network traffic
 
-    This data is not in any particular form. [!](box)
-
-- Design the _layout_ of one or more _tables_ to store the domain specific data.
-
-    > The data must be stored in a lossless form.
-    >
-    > This is __data modeling__.
+> [!](box fragment)
+> *Data Modeling*
+> 
+> The data must be stored in a lossless form.  Designing the layout and storage
+> of data based on the real-life scenario is called *data modeling*.
 
 
 Case study: a social graph as tables
@@ -237,6 +292,8 @@ How do we model the additional information of the augmented social graph?
 
 # ___________________________
 
+[!](scale 0.9)
+
 [!](columns 5:)
 
 <img src="social-graph-2.png"></img>
@@ -245,12 +302,16 @@ How do we model the additional information of the augmented social graph?
 
 Use more tables [!](box)
 
+Table: *Knows*
+
 | person | knows |
 |--------|-------|
 | Steve Jobs | Marissa Mayer |
 | Steve Jobs | Bill Gates    |
 | Bill Gates | Marissa Mayer |
 | Bill Gates | Bill Joy      |
+
+Table: *Position*
 
 | person | position | company |
 |--------|----------|---------|
@@ -266,12 +327,14 @@ What if we use one table? [!](box)
 
 [!](columns 7:)
 
+Table: *Knows-and-position*
+
 | person | position | company | knows |
 |--------|----------|---------|-------|
-| Steve Jobs | CEO | Apple | Marissa Mayer |
+| Steve Jobs | <red>CEO</red> | <red>Apple</red> | Marissa Mayer |
 | Steve Jobs | <red>CEO</red> | <red>Apple</red> | Bill Gates |
-| Bill Gates | Chairman | Microsoft | Marissa Mayer |
-| Bill Gates | <red>Chairman</red> | <red>Microsoft</red> | Bill Joy |
+| Bill Gates | <blue>Chairman</blue> | <blue>Microsoft</blue> | Marissa Mayer |
+| Bill Gates | <blue>Chairman</blue> | <blue>Microsoft</blue> | Bill Joy |
 | Marissa Mayer | CEO | Yahoo | <blue>NULL</blue> |
 | Bill Joy | Chief Scientist | SUN Microsystems | <blue>NULL</blue> |
 
@@ -284,16 +347,24 @@ times just because `Steve Jobs` knows lots of people.
 
 2. <blue>NULL</blue> values are used for `Marissa Mayer` and `Bill Joy`.
 
+# _______________________________
 
-Data modeling
-==============================================
+Let's summarize the data model:
 
-In this course, we will explore the theory and best practices of data modeling
-with tables.
+> - [!](comfortable)
+> - We will use two tables.
+> 
+> - Table *Knows* will have two attributes:
+> 
+>     - person: text
+>     - knows: text
+> 
+> - Table *Position* will have three attributes:
+> 
+>     - person: text
+>     - position: text
+>     - company: text
 
-[!](***)
-
-(A lot) more on this in the coming weeks.
 
 
 Summary
@@ -310,44 +381,3 @@ Summary
 - Values (data and missing)
 
 - Data modeling
-
-
-
-
-
-
-What's to come.
-==============================================
-
-[!](highlight)
-
-
-# Relational data model
-
-- Table schema and table instances
-
-- Constraints to maintain data integrity
-
-- Relational databases and expressing relational data in Structured Query
-  Language (SQL)
-
-
-# Data Analysis using SQL
-
-- Theory of relational algebra and SQL
-
-- Aggregration and complex SQL
-
-
-# Programming interface to databases
-
-- Python application programming interface (API)
-
-- Case studies of database API 
-
-
-
-
-
-
-
