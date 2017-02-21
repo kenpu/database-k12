@@ -1,6 +1,9 @@
 render:
 	hugo -t course
 
+site:
+	cd public; python -m SimpleHTTPServer 1313
+
 serve:
 	hugo server -t course -w
 

@@ -29,7 +29,7 @@
 
     function renderResults(out, results, name) {
         if(name) {
-            out.append($("<h5>").text(name));
+            out.append($("<div>").text("Table: " + name));
         }
         if($.isArray(results)) {
             results.forEach(function(result, i) {
@@ -40,20 +40,27 @@
         }
     }
 
-    function copyStyle($from, $to) {
-        $to.attr('style', $from.attr('style')).addClass($from.attr('class'));
+    function listTables(db) {
+        var meta = db.exec("select name from sqlite_master");
+        var tables = []
+        if(meta.length > 0) {
+            tables = meta[0].values.map(function(tuple) {return tuple[0]});
+        }
+        return tables;
     }
 
     // ==================================
     // Render a database
     // ==================================
     function renderDatabase(out, db) {
-        var meta = db.exec("select name from sqlite_master");
-        var tables = meta[0].values.map(function(tuple) {return tuple[0]});
-        tables.forEach(function(t) {
-            var results = db.exec("SELECT * FROM " + t);
-            renderResults(out, results, t);
-        });
+        var tables = listTables(db);
+        if(tables.length > 0)
+            tables.forEach(function(t) {
+                var results = db.exec("SELECT * FROM " + t);
+                renderResults(out, results, t);
+            });
+        else
+            out.append("Database is empty.");
     }
 
     // ==================================
@@ -63,7 +70,45 @@
         $("script[type='sql']", $slide).each(function() {
             prepareSQL($(this));
         });
+
+        $("button[sql-run]", $slide).each(function() {
+            prepareSQLButton($(this), $slide);
+        });
     }
+
+    function prepareSQLButton($btn, $slide) {
+        $btn.click(function() {
+            var db = window.db;
+            var sqlSource = $btn.attr('sql-source');
+            var sqlDump = $btn.attr('sql-dump');
+            var sqlOutput = $btn.attr('sql-output');
+            var sql;
+            if($(sqlSource).is("textarea")) {
+                sql = $(sqlSource, $slide).val();
+            } else {
+                sql = $(sqlSource, $slide).text();
+            }
+
+            try {
+                if(sql) {
+                    var results = db.exec(sql);
+                    if(sqlOutput) {
+                        var $sqlOutput = $(sqlOutput, $slide);
+                        $sqlOutput.empty();
+                        renderResults($sqlOutput, results);
+                    }
+                }
+                if(sqlDump) {
+                    var $sqlDump = $(sqlDump, $slide);
+                    $sqlDump.empty();
+                    renderDatabase($sqlDump, db);
+                }
+            } catch(e) {
+                sweetAlert("SQLError:", e.message, "error");
+            }
+        });
+    }
+
     function prepareSQL($q) {
         var $div = $("<div>");
         copyStyle($q, $div);
@@ -119,7 +164,6 @@
                 $div.text(e.message);
             }
         });
-        $btn.click();
     }
 
 

@@ -87,46 +87,128 @@ We will interact with a RDBMS system, known as SQLite, through your browser.
 
 Issue commands to RDBMS
 
+> - Create data
+>
 > - Modify data
 >
 > - Query data
 
 
+# Parts of RDBMS
+
+- A database
+
+    > - name of the database
+    > - a collection of tables
+
+    [!](box)
+    We will use a database that is already created
+    as part of this Web page.
+
+- A table
+
+    > - name of the table
+    > - a list of attributes
+    > - a collection of tuples
 
 
-# SQL 1
+# Creating tables
+
+```sql
+CREATE TABLE <name> (
+    <attribute> <type>, ...
+);
+```
+
+> 1. Specifies the attribute names and their types.
+> 
+> 2. Run multiple `CREATE TABLE` commands to create more than one table.
+> [!](note) 
+
+_Example:_
+
+```sql
+CREATE TABLE cities (
+    name text,
+    population integer
+);
+```
+
+# _________________________
+
+## Try it out
 
 [!](columns 6:)
 
-<script type="sql" execute quiet>
-CREATE TABLE T1 (a int);
-INSERT INTO T1 values (1),(2),(3);
-</script>
+<textarea style="height:300px; padding: 10px;">
+CREATE TABLE knows (
+    name text,
+    friend text
+)
+</textarea>
 
-<script type="sql" execute class="q">
-SELECT * FROM T1
-</script>
+<button 
+    class="btn btn-default"
+    sql-run
+    sql-source="textarea"
+    sql-dump="#output">Run</button>
 
 [!](split)
 
-<script type="sql" dump class="b"></script>
+### Database
 
-# SQL 2
+<div id="output"></div>
 
-<script type="sql" editor class="c">
-SELECT * FROM T1
-</script>
 
-<style>
-.c {
- display: flex;
-}
-.c .editor {
-  flex: 1;
-  margin-right: 20px;
-}
-.c .result {
-  flex: 1;
-  display: flex;
-}
-</style>
+
+# Delete a table
+
+```sql
+DROP TABLE <table>;
+```
+
+# __________________
+
+<textarea style="height:100px; padding: 10px;">
+</textarea>
+
+[!](note) Can you delete the table created in previous slide?
+
+<button
+  class="btn btn-default"
+  sql-run
+  sql-source="textarea"
+  sql-dump="#output">Run</button>
+
+
+<div id="output"></div>
+
+# Creating tuples
+
+```sql
+INSERT INTO TABLE <table>
+VALUES (<tuple>), ... ;
+```
+
+_Example_:
+
+```{sql clipboard}
+CREATE TABLE IF NOT EXISTS cities (name TEXT, population INTEGER);
+
+INSERT INTO cities VALUES ('Toronto', 2600000), ('Oshawa', 140000);
+```
+
+[!](note fragment) Note the `if not exists` clause with create table.
+
+# Try it out
+
+<textarea style="height:200px; padding: 10px"></textarea>
+
+<button class="btn btn-default"
+        sql-run
+        sql-source="textarea"
+        sql-dump="#output">Run</button>
+
+<div id="output"></div>
+
+
