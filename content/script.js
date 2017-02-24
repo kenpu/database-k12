@@ -2,7 +2,9 @@
     // ==================================
     // Render results
     // ==================================
-    function renderResult(out, result) {
+    function renderResult(out, result, append) {
+        if(! append) out.empty();
+
         var table = $("<table>").addClass("sql-result");
 
         // create the table header
@@ -16,27 +18,31 @@
 
         // create the table body
         var tbody = $("<tbody>");
-        result.values.forEach(function(tuple, i) {
+        for(var i=0; i < result.values.length; i++) {
+            var tuple = result.values[i];
             var row = $("<tr>");
             tuple.forEach(function(val, j) {
                 row.append($("<td>").text(val));
             });
             tbody.append(row);
-        });
+
+            if(i > 1000) break;
+        }
         table.append(tbody);
         out.append(table);
     }
 
-    function renderResults(out, results, name) {
+    function renderResults(out, results, name, append) {
+        if(! append) out.empty();
         if(name) {
             out.append($("<div>").text("Table: " + name));
         }
         if($.isArray(results)) {
             results.forEach(function(result, i) {
-                renderResult(out, result);
+                renderResult(out, result, true);
             });
         } else {
-            renderResult(out, results);
+            renderResult(out, results, true);
         }
     }
 
@@ -53,11 +59,12 @@
     // Render a database
     // ==================================
     function renderDatabase(out, db) {
+        out.empty();
         var tables = listTables(db);
         if(tables.length > 0)
             tables.forEach(function(t) {
                 var results = db.exec("SELECT * FROM " + t);
-                renderResults(out, results, t);
+                renderResults(out, results, t, true);
             });
         else
             out.append("Database is empty.");
@@ -76,6 +83,21 @@
         });
     }
 
+    function emptyDiv($div) {
+        if($div) {
+            $div.empty().append($("<i>").addClass("fa fa-cog fa-spin"));
+        }
+    }
+
+    function errDiv($div, message) {
+        if($div) {
+            $div.empty().append($("<i>").addClass("fa fa-exclamation-triangle").css('color', 'crimson'));
+            if(message) {
+                $div.append($("<div>").text(message).addClass("alert alert-danger").css('padding', 20));
+            }
+        }
+    }
+
     function prepareSQLButton($btn, $slide) {
         $btn.click(function() {
             var db = window.db;
@@ -88,81 +110,32 @@
             } else {
                 sql = $(sqlSource, $slide).text();
             }
+            console.debug("SQL:", sql);
 
-            try {
-                if(sql) {
-                    var results = db.exec(sql);
-                    if(sqlOutput) {
-                        var $sqlOutput = $(sqlOutput, $slide);
-                        $sqlOutput.empty();
-                        renderResults($sqlOutput, results);
+            var $sqlOutput, $sqlDump;
+            if(sqlOutput) $sqlOutput = $(sqlOutput, $slide);
+            if(sqlDump) $sqlDump = $(sqlDump, $slide);
+
+            emptyDiv($sqlOutput);
+            emptyDiv($sqlDump);
+
+            setTimeout(function() {
+                try {
+                    if(sql) {
+                        var results = db.exec(sql);
+                        if($sqlOutput) {
+                            renderResults($sqlOutput, results, false);
+                        }
                     }
+                    if($sqlDump) {
+                        renderDatabase($sqlDump, db, false);
+                    }
+                } catch(e) {
+                    sweetAlert("SQLError:", e.message, "error");
+                    errDiv($sqlOutput, e.message);
+                    errDiv($sqlDump, e.message);
                 }
-                if(sqlDump) {
-                    var $sqlDump = $(sqlDump, $slide);
-                    $sqlDump.empty();
-                    renderDatabase($sqlDump, db);
-                }
-            } catch(e) {
-                sweetAlert("SQLError:", e.message, "error");
-            }
-        });
-    }
-
-    function prepareSQL($q) {
-        var $div = $("<div>");
-        copyStyle($q, $div);
-        if($q.attr('execute') !== undefined) {
-            prepareExecute($q, $div);
-        } else if($q.attr('dump') !== undefined) {
-            prepareDump($q, $div);
-        } else if($q.attr('editor') !== undefined) {
-            prepareEditor($q, $div);
-        }
-        if($q.attr('quiet') == undefined) {
-            $q.after($div);
-        }
-    }
-
-    function prepareExecute($q, $div) {
-        var $result = $("<div>").addClass("result").appendTo($div);
-        sql = $q.text();
-        try {
-            var results = db.exec(sql);
-            renderResults($result, results);
-        } catch(e) {
-            $result.text(e.message);
-        }
-    }
-
-    function prepareDump($q, $container) {
-        var $div = $("<div>").addClass("result");
-        var $btn = $("<button><i class='fa fa-refresh'></i></button>").addClass("btn btn-default");
-        $container.append($div, $btn);
-
-        $btn.click(function() {
-            $div.empty();
-            renderDatabase($div, db);
-        });
-        renderDatabase($div, db);
-    }
-
-    function prepareEditor($q, $container) {
-        var $text = $("<textarea>").text($q.text().trim());
-        var $div = $("<div>").addClass("result");
-        var $btn = $("<button><i class='fa fa-refresh'></i></button>").addClass("btn btn-default");
-        var $editor = $("<div>").addClass("editor").append($text, $btn);
-
-        $container.append($editor, $div);
-
-        $btn.click(function() {
-            $div.empty();
-            try {
-                var results = db.exec($text.val());
-                renderResults($div, results);
-            } catch(e) {
-                $div.text(e.message);
-            }
+            }, 100);
         });
     }
 
@@ -187,6 +160,7 @@ function asyncLoadDb(url) {
 
 window.sqlHelper = {
     prepare: prepare,
+    load: asyncLoadDb
 };
 
 })();

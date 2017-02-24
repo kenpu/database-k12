@@ -94,7 +94,7 @@ Issue commands to RDBMS
 > - Query data
 
 
-# Parts of RDBMS
+# Elements of RDBMS
 
 - A database
 
@@ -202,6 +202,8 @@ INSERT INTO cities VALUES ('Toronto', 2600000), ('Oshawa', 140000);
 
 # Try it out
 
+[!](columns 8:)
+
 <textarea style="height:200px; padding: 10px"></textarea>
 
 <button class="btn btn-default"
@@ -209,6 +211,95 @@ INSERT INTO cities VALUES ('Toronto', 2600000), ('Oshawa', 140000);
         sql-source="textarea"
         sql-dump="#output">Run</button>
 
+[!](split)
+
 <div id="output"></div>
 
 
+# SELECTING Tuples
+
+What if we are only interested in some attributes of some tuples?
+
+Use the _select_ statement:
+
+```sql
+SELECT <attribute> ...
+FROM <table>
+WHERE <condition>
+```
+
+_Example:_
+
+```{sql clipboard}
+SELECT population FROM cities WHERE name = 'Toronto'
+```
+
+# Try it out:
+
+[!](columns 4:)
+
+<button class="btn btn-info"
+        sql-run
+        sql-dump=".all">Show database</button>
+
+<div class="all"></div>
+
+[!](split)
+
+<textarea style="height:200px;padding: 10px;"></textarea>
+
+<button class="btn btn-default"
+        sql-run
+        sql-source="textarea"
+        sql-output="#output">Run</button>
+
+<div id="output"></div>
+
+
+
+
+# DELETING tuples
+
+- Tuples can be removed from a table using the `DELETE`
+  command.
+
+    ```sql
+    DELETE FROM <table>
+    WHERE <condition>
+    ```
+
+- Example
+
+    ```sql
+    DELETE FROM cities
+    WHERE name = 'Oshawa'
+    ```
+
+# Try it out:
+
+[!](columns 6:)
+
+<textarea style="height: 200px; padding: 10px"></textarea>
+
+<button class="btn btn-default"
+       sql-run
+       sql-source="textarea"
+       sql-dump=".output">Run</button>
+
+[!](split)
+
+<div class="output"></div>
+
+<button class="btn btn-info" sql-run sql-dump=".output">Show database</button>
+
+
+
+# Summary
+
+[!](highlight)
+
+- `CREATE TABLE <table> ( <attribute> <type>, ... )`
+- `DROP TABLE <table>`
+- `INSERT INTO <table> VALUES (...), ...`
+- `SELECT <attribute>, ... FROM <table> WHERE <condition>`
+- `DELETE FROM <table> WHERE <condition>`
