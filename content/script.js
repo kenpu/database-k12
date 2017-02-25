@@ -105,12 +105,13 @@
             var sqlDump = $btn.attr('sql-dump');
             var sqlOutput = $btn.attr('sql-output');
             var sql;
-            if($(sqlSource).is("textarea")) {
+            if($(sqlSource, $slide).is("textarea")) {
                 sql = $(sqlSource, $slide).val();
             } else {
                 sql = $(sqlSource, $slide).text();
             }
             console.debug("SQL:", sql);
+            window.slide = $slide;
 
             var $sqlOutput, $sqlDump;
             if(sqlOutput) $sqlOutput = $(sqlOutput, $slide);
